@@ -16,7 +16,7 @@ def compute_distances(database_path, users, output_dir, user_names=None):
   if user_names is None:
     user_names = list(range(len(users)))
   
-  user_name_dict = dict(zip(users, user_names))
+  user_name_dict = dict(list(zip(users, user_names)))
   acc = []
   for u in users:
     df = LinearTransform(u, database_path=database_path)._get_user_data()
@@ -28,10 +28,10 @@ def compute_distances(database_path, users, output_dir, user_names=None):
       'Linear': LinearRegression(fit_intercept=False),
       'Non-Linear': MLPRegressor()
     }
-    for model_name, model in models.items():
+    for model_name, model in list(models.items()):
       kf = KFold(n_splits=10, random_state=0, shuffle=False)
       distance_ratios = np.array([], dtype=float)
-      for train_ix, test_ix in kf.split(range(df.shape[0])):
+      for train_ix, test_ix in kf.split(list(range(df.shape[0]))):
         print("Evaluating fold")
         train_target_vals = target_vals[train_ix]
         train_specimen_vals = specimen_vals[train_ix]

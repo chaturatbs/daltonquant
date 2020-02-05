@@ -10,7 +10,7 @@ def to_rgb(im):
     return im
   else:
     return im.convert('RGB')
-       
+
 def count_colors(im):
   """ Table of color frequency (# of pixels) """
   if im.mode != 'RGB':
@@ -21,4 +21,4 @@ def count_colors(im):
   cts = df.groupby(rgb)[['r']].count().rename(columns = {'r' :'ct'}).reset_index()
   cts = cts.sort_values('ct', ascending=False).reset_index(drop=True)
   return cts
-  
+

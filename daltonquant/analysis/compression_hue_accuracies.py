@@ -14,7 +14,7 @@ import specimen.utils as s_utils
 from specimen.database import queries as s_qs
 
 from ..get_cvd import get_user_data
-from images_as_game import hue_accuracies
+from .images_as_game import hue_accuracies
 
 
 def compute_hue_accuracies(targetdir, specimendir, scorer, userid, ncolors):
@@ -69,8 +69,8 @@ def main(database_path, targetdir, specimendir, scorer, userid, outdir, target_n
   dfs.append(observed)
   combined = pd.concat(dfs, axis=0)
 
-  print "Correlation of accuracies"
-  print combined.pivot_table(index='hue', columns='ncolors', values='acc').corr()
+  print("Correlation of accuracies")
+  print(combined.pivot_table(index='hue', columns='ncolors', values='acc').corr())
   p = plot_hue_accuracies(combined)
   plot_path = os.path.join(outdir, '%s_image_hue_accuracies.pdf' % scorer)
   p.get_figure().savefig(plot_path)

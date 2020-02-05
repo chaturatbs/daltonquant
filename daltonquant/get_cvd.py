@@ -178,14 +178,14 @@ def main(args):
   # produce diagnostic plots for each user
   if args.plot:
     for user in cvd_user_ids:
-      print "Plotting %s" % user
+      print("Plotting %s" % user)
       ps = plot_cvd_diagnostics(db, user, combined_plots=args.combine)
-      for p_nm, p in ps.iteritems():
+      for p_nm, p in ps.items():
         plot_path = os.path.join(outdir, 'cvd_diagnostics_%s_%s.pdf' % (p_nm, user))
         p.savefig(plot_path)
       plt.close('all')
   
-  print args.sep.join(map(str, cvd_user_ids))
+  print(args.sep.join(map(str, cvd_user_ids)))
 
   
 
@@ -214,7 +214,7 @@ if __name__ == '__main__':
   if not args.userids and not args.n_users:
     raise Exception("Must provide a list of user ids or a number of users to extract")
   if args.userids:
-    print "Ignore min_obs parameters if passed"
+    print("Ignore min_obs parameters if passed")
   if args.n_users and (not args.alpha or not args.min_obs):
     raise Exception("Must provide alpha and min_obs parameters if providing number of users to extract")
 

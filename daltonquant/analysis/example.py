@@ -1,6 +1,6 @@
 from ..compressors import SpecimenQuant
 
 def p():
-    print SpecimenQuant
+    print(SpecimenQuant)
 
 p()

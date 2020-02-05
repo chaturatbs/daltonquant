@@ -23,8 +23,8 @@ from ..utils import pil as p_utils
 def mean_rss(database_path, users, output_dir, user_names=None):
   #users = pd.read_csv('ext_users/cvd_users_info.csv')['userid']
   if user_names is None:
-    user_names = range(1, len(users) + 1)
-  user_name_map = dict(zip(users, user_names))
+    user_names = list(range(1, len(users) + 1))
+  user_name_map = dict(list(zip(users, user_names)))
   pcts = np.arange(0.1, 0.9, 0.1)
   iters = 10
 
@@ -40,12 +40,12 @@ def mean_rss(database_path, users, output_dir, user_names=None):
       'Linear': LinearRegression(fit_intercept=False),
       'Non-Linear': MLPRegressor()
     }
-    for model_name, model in models.items():
+    for model_name, model in list(models.items()):
       # repeat it X times
        for pct in pcts:
          repeated = 0
          while repeated < iters:
-           print "Model: %s, User: %s, Pct: %.2f [%d/%d]" % (model_name, u, pct, repeated, iters)
+           print("Model: %s, User: %s, Pct: %.2f [%d/%d]" % (model_name, u, pct, repeated, iters))
            train_target_vals, _, train_specimen_vals, _ = train_test_split(target_vals, specimen_vals, test_size=1 - pct)
            model.fit(train_target_vals, train_specimen_vals)
 
@@ -109,14 +109,14 @@ def rank_correlation(database_path, user, impaths, output_dir):
   transforms = {'linear': LinearTransform, 'non-linear': NonLinearTransform}
   acc = []
   for impath in impaths:
-    print "Image Path: %s" % impath
+    print("Image Path: %s" % impath)
     im_name = int(os.path.basename(impath)[5:7])
     temp = NamedTemporaryFile(suffix='.png')
     im = PngQuant().compress(impath, outpath=temp.name, ret_im=True)
     im = p_utils.to_rgb(im)
     color_cts = p_utils.count_colors(im)
-    for transform_name, transform in transforms.items():
-      print "Transform: %s" % transform_name
+    for transform_name, transform in list(transforms.items()):
+      print("Transform: %s" % transform_name)
       # fit with full data
       orig_scorer = transform(user, database_path=database_path)
       # set random state for nonlinear
@@ -126,11 +126,11 @@ def rank_correlation(database_path, user, impaths, output_dir):
       orig_scorer.fit(df)
       # only consider the top N candidates
       orig_sorted_candidates = orig_scorer.sorted_candidates(color_cts, 1.0)[:top_n_candidates]
-      orig_sorted_candidates = np.array(map(lambda x: x[:-1], orig_sorted_candidates)).reshape(-1, 6)
+      orig_sorted_candidates = np.array([x[:-1] for x in orig_sorted_candidates]).reshape(-1, 6)
       orig_ranking = np.arange(len(orig_sorted_candidates))
       for pct in pcts:
         for i in range(n_iters):
-          print "User %s with history fraction %f [%d/%d]" % (user, pct, i + 1, n_iters)
+          print("User %s with history fraction %f [%d/%d]" % (user, pct, i + 1, n_iters))
           df_sample = df.sample(frac=pct)
           # rank colors with new_version
           scorer = transform(user, database_path=database_path)
@@ -138,7 +138,7 @@ def rank_correlation(database_path, user, impaths, output_dir):
             scorer.nn.random_state = 1
           scorer.fit(df_sample)
           sorted_candidates = scorer.sorted_candidates(color_cts, 1.0)
-          sorted_candidates = np.array(map(lambda x: x[:-1], sorted_candidates)).reshape(-1, 6)
+          sorted_candidates = np.array([x[:-1] for x in sorted_candidates]).reshape(-1, 6)
           new_ranking = index_in_new_list(orig_sorted_candidates, sorted_candidates)
           rho = spearmanr(orig_ranking, new_ranking)
           acc.append((im_name, transform_name, pct, i, new_ranking, rho.correlation, rho.pvalue))
@@ -151,7 +151,7 @@ def rank_correlation(database_path, user, impaths, output_dir):
   
   transform_names = {'linear': 'Linear', 'non-linear': 'Non-Linear'}
   color_palette = sns.color_palette("hls", 24)
-  for name in transform_names.keys():
+  for name in list(transform_names.keys()):
       subset_df = summary_df[summary_df['transform_name'] == name]
       subset_plot = sns.pointplot(data=subset_df, x='pct', y='rho', hue='im_name', palette=color_palette)
       subset_plot.set_title('%s Transformation' % transform_names[name], size=20)

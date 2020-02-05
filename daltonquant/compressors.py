@@ -14,8 +14,8 @@ from scipy.spatial.distance import pdist, squareform
 
 from specimen import utils as s_utils
 
-from utils import pil as p_utils
-from utils import compress as c_utils
+from .utils import pil as p_utils
+from .utils import compress as c_utils
 
 
 
@@ -132,7 +132,7 @@ class UpperBoundQuant(Compressor):
     # create new color palette based on values that remain
     new_palette = np.array(list(set(color_map.values())))
     # map each color to index in map, needed for palette images
-    new_palette_ix_map = dict(zip(map(tuple, new_palette), range(new_palette.shape[0])))
+    new_palette_ix_map = dict(list(zip(list(map(tuple, new_palette)), list(range(new_palette.shape[0])))))
     get_new_index = lambda orig_color: new_palette_ix_map[color_map[orig_color]]
     # add as many necessary zeros to create complete 768 entry palette
     zeros = np.tile([0, 0, 0], (256 - ncolors, 1))
@@ -218,7 +218,7 @@ class MedianCutQuant(Compressor):
     # create new color palette based on values that remain
     new_palette = np.array(list(set(color_map.values())))
     # map each color to index in map, needed for palette images
-    new_palette_ix_map = dict(zip(map(tuple, new_palette), range(new_palette.shape[0])))
+    new_palette_ix_map = dict(list(zip(list(map(tuple, new_palette)), list(range(new_palette.shape[0])))))
     get_new_index = lambda orig_color: new_palette_ix_map[color_map[orig_color]]
     # add as many necessary zeros to create complete 768 entry palette
     zeros = np.tile([0, 0, 0], (256 - ncolors, 1))
@@ -285,7 +285,7 @@ class SpecimenQuant(Compressor):
     new_colors = set(color_map.values())
     new_palette = np.array(list(new_colors))
     # map each color to index in map, needed for palette images
-    new_palette_ix_map = dict(zip(map(tuple, new_palette), range(new_palette.shape[0])))
+    new_palette_ix_map = dict(list(zip(list(map(tuple, new_palette)), list(range(new_palette.shape[0])))))
     get_new_palette_index = lambda col: new_palette_ix_map[color_map[col]]
     # figure out how many colors we have
     new_ncolors = len(new_colors)
@@ -331,7 +331,7 @@ class SpecimenQuant(Compressor):
     new_palette = new_palette.flatten(order='C').tolist()
     new_pixels = new_im.load()
     new_im.putpalette(new_palette)
-    for (r, c), col in pixel_to_color_map.items():
+    for (r, c), col in list(pixel_to_color_map.items()):
       new_pixels[r, c] = palette_index_map[col]
     return new_im
 
@@ -341,7 +341,7 @@ class SpecimenQuant(Compressor):
     changed = True
     while changed:
       changed = False
-      for k, v in m.iteritems():
+      for k, v in m.items():
         if v in m:
           m[k] = m[v]
           changed = True
@@ -350,7 +350,7 @@ class SpecimenQuant(Compressor):
   def _reduced_colorspace(self, im, target_ncolors, alpha):
     color_cts = p_utils.count_colors(im)
     if color_cts.shape[0] > 256 and target_ncolors < 256:
-      print "Error: Currently only works on pre-processed images with reduced color spaces, apply pngquant first"
+      print("Error: Currently only works on pre-processed images with reduced color spaces, apply pngquant first")
       sys.exit(1)
     candidates = self.scorer.sorted_candidates(color_cts, alpha)
     require = 256 - target_ncolors

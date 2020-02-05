@@ -20,7 +20,7 @@ DEBUG = False
 
 def print_debug(msg):
   if DEBUG:
-    print msg
+    print(msg)
 
 def evaluate_image(origpath, impath):
   """ Evaluate an image """
@@ -58,11 +58,11 @@ def evaluate(impath, scorer, quantizer, target_ncolors, outdir, alpha, tiny_png_
 
   methods = ['orig', 'specimen', 'pngquant', 'tinypng', 'medquant']
   paths = [impath, specimen_path, pngquant_path, tinypng_path, medquant_path]
-  methods_and_path = zip(methods, paths)
+  methods_and_path = list(zip(methods, paths))
   
   for method, compressed_path in methods_and_path:
     metrics = evaluate_image(impath, compressed_path)
-    metrics = {('%s_%s' % (method, k)): v for k, v in metrics.iteritems()}
+    metrics = {('%s_%s' % (method, k)): v for k, v in metrics.items()}
     result_metrics.update(metrics)
   result_df = pd.DataFrame([result_metrics])
   # sort order of columns
@@ -85,7 +85,7 @@ def main(args):
   # count number of runs to provide some estimate
   nruns = len(args.userids) * len(scorer_constructors) * len(quantizers) * len(args.input_images) * len(args.target_ncolors)
   done = 0
-  print "Running a total of %d evaluations" % nruns
+  print("Running a total of %d evaluations" % nruns)
   for user in args.userids:
     # construct distinct scorers for a given user
     user_scorers = [c(user, database_path=args.database_path) for c in scorer_constructors]
@@ -97,7 +97,7 @@ def main(args):
           for target in args.target_ncolors:
             results.append(evaluate(image, scorer, quant, target, args.outdir, args.alpha, args.tiny_png_key, args.tiny_png_cache_folder))
             done += 1
-            print "Done with %d/%d" % (done, nruns)
+            print("Done with %d/%d" % (done, nruns))
             
 
   results = pd.concat(results, axis=0)
@@ -105,11 +105,11 @@ def main(args):
   results.to_csv(results_csv_file, index=False)
   if args.stdout:
       for res in results:
-        print str_results(res) + '\n'
+        print(str_results(res) + '\n')
 
 def sarg_to_list(s):
   elems = s.split(',') if ',' in s else s.split()  
-  elems = map(lambda x: x.strip(), elems)
+  elems = [x.strip() for x in elems]
   return [e for e in elems if len(e) > 0]
 
 
@@ -139,11 +139,11 @@ if __name__ == "__main__":
   DEBUG = args.debug
 
   args.input_images = sarg_to_list(args.input_images)
-  args.target_ncolors = map(int, sarg_to_list(args.target_ncolors))
+  args.target_ncolors = list(map(int, sarg_to_list(args.target_ncolors)))
   args.userids = args.userids.split(',')
     
   
-  print args
+  print(args)
   try:
     main(args)
   except:

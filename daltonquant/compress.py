@@ -1,7 +1,7 @@
 # Wrap DaltonQuant's compression in a function
 
-from compressors import PngQuant, TinyPng, MedianCutQuant, SpecimenQuant
-from scorers import LinearTransform, NonLinearTransform
+from .compressors import PngQuant, TinyPng, MedianCutQuant, SpecimenQuant
+from .scorers import LinearTransform, NonLinearTransform
 
 def compress(impath, userid, database_path, transform_name='linear', prequantizer_name='pngquant', **kwargs):
     if transform_name == 'linear':

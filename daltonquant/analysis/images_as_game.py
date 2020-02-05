@@ -18,7 +18,7 @@ def image_to_pixels(im):
   return pixels.reshape(h * w, 3)
   
 def images_to_specimen(target_path, specimen_path):
-  print "Comparing %s[target] vs %s[specimen]" % (target_path, specimen_path)
+  print("Comparing %s[target] vs %s[specimen]" % (target_path, specimen_path))
   target = Image.open(target_path)
   specimen = Image.open(specimen_path)
   pixels_t = image_to_pixels(target)
@@ -48,8 +48,8 @@ if __name__ == '__main__':
   parser.add_argument('specimens', type=str, help='csv sep list of paths to specimen images')
   parser.add_argument('-o', '--out', type=str, help='Output path for csv', default='simulated.csv')
   args = parser.parse_args()
-  targets = map(lambda x: x.strip(), ','.split(args.targets))
-  specimens = map(lambda x: x.strip(), ','.split(args.specimens))
+  targets = [x.strip() for x in ','.split(args.targets)]
+  specimens = [x.strip() for x in ','.split(args.specimens)]
   result = analyze(targets, specimens)
   result.to_csv(args.out, index=False)
 

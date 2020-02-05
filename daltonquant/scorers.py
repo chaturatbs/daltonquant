@@ -38,7 +38,7 @@ class SpecimenScorer(object):
     assert(max_metric != 0)
     norm_metric_matrix = metric_matrix / max_metric
     color_cts['norm_ct'] = color_cts['ct'] / color_cts['ct'].max()
-    norm_cts = dict(zip(color_cts[list('rgb')].apply(tuple, axis=1), color_cts['norm_ct']))
+    norm_cts = dict(list(zip(color_cts[list('rgb')].apply(tuple, axis=1), color_cts['norm_ct'])))
     pairs = []
     ncolors = len(colors)
     for i in range(0, ncolors):
@@ -60,7 +60,7 @@ class SpecimenScorer(object):
     """ Fit estimator based on userid from specimen database """
     try:
       df = self._prepare_data(df)
-      print "Fitting with history: nobs=%d" % (df.shape[0])
+      print("Fitting with history: nobs=%d" % (df.shape[0]))
       self._fit(df)
     except:
      self._load_predefined()
@@ -68,15 +68,15 @@ class SpecimenScorer(object):
   def _prepare_data(self, df):
     if df is None:
       if self.userid is None:
-        print "Retrieving a sample user id, none provided"
+        print("Retrieving a sample user id, none provided")
         self.userid = self._get_userid()
-      print "Populating data for user id %s" % self.userid
+      print("Populating data for user id %s" % self.userid)
       df = self._get_user_data()
     return df
 
   def _load_predefined(self):
-    print "Failed to retrieve specimen data for user indicated"
-    print "Loading pre-calculated scorer"
+    print("Failed to retrieve specimen data for user indicated")
+    print("Loading pre-calculated scorer")
     # predefined scorer
     with open(self.default_predef_path, 'r') as default_predef_file:
       self.scorer = pickle.load(default_predef_file)
@@ -146,7 +146,7 @@ class AbstractDensityScorer(SpecimenScorer):
     ncolors = len(lab)
     # TODO: there must be a better way
     ix1 = np.repeat(np.arange(ncolors), np.arange(ncolors - 1, -1, -1))
-    ix2 = np.hstack(map(lambda x: np.arange(x, ncolors), np.arange(ncolors) + 1))
+    ix2 = np.hstack([np.arange(x, ncolors) for x in np.arange(ncolors) + 1])
     # density estimates
     flat_dens = np.exp(self._score_samples(flat_dists, colors[ix1], colors[ix2]))
     # make densities into matrix and negate to sort correctly
@@ -189,8 +189,8 @@ class HueKDE(AbstractDensityScorer):
     self.scorer_method = 'hue kde'
 
   def _load_predefined(self):
-    print "Failed to retrieve specimen data for user indicated"
-    print "Loading pre-calculated estimator"
+    print("Failed to retrieve specimen data for user indicated")
+    print("Loading pre-calculated estimator")
     with open(self.default_hue_kdes_path, 'r') as hue_kdes_file:
       self.hue_kdes = pickle.load(hue_kdes_file)
     with open(self.default_global_kde_path, 'r') as global_kde_file:

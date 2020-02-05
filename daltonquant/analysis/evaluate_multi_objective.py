@@ -10,7 +10,7 @@ import seaborn as sns
 
 from ..compressors import PngQuant, SpecimenQuant
 from ..scorers import NonLinearTransform, HueKDE
-from evaluate import evaluate_image
+from .evaluate import evaluate_image
 
 
 def evaluate_multi(database_path, user, target_ncolors, impaths, outdir):
@@ -24,7 +24,7 @@ def evaluate_multi(database_path, user, target_ncolors, impaths, outdir):
   acc = []
   for impath in impaths:
     for alpha in alphas:
-      print "%s alpha = %f" % (impath, alpha)
+      print("%s alpha = %f" % (impath, alpha))
       specimen_impath = specimen.compress(impath, target_ncolors, alpha, outdir=tempdir)
       res = evaluate_image(impath, specimen_impath)
       res['alpha'] = alpha

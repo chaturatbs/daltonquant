@@ -88,7 +88,7 @@ def compression_ratio_boxplots(input_path, output_path):
     for i, _ in enumerate(ncolors):
       pos_start = 1 + (n_pre_quantizers + 2) * i
       pos_end = pos_start + n_pre_quantizers
-      pos = range(pos_start, pos_end)
+      pos = list(range(pos_start, pos_end))
       bp = ax.boxplot(data[i], positions=pos, widths=0.6)
       xticks.append(np.mean(pos))
       # set colors for pre quantizers
@@ -100,7 +100,7 @@ def compression_ratio_boxplots(input_path, output_path):
         plt.setp(bp['whiskers'][j * 2], color=color)
         plt.setp(bp['whiskers'][j * 2 + 1], color=color)
         plt.setp(bp['medians'][j], color=color)
-    ax.set_xticklabels(map(lambda x: '%d' % x, ncolors))
+    ax.set_xticklabels(['%d' % x for x in ncolors])
     ax.set_xticks(xticks)
     ax.tick_params(labelsize=16)
     ax.set_title('Scorer: %s' % s)
@@ -126,8 +126,8 @@ def cvd_user_accuracy(db, input_path, output_path):
   accs = np.array(accs) * 100.0
   fig, ax = plt.subplots(1, figsize=(8, 7.5))
   # ugly hack to avoid sns trying to convert string ids to number
-  pcvd_id = map(lambda x:'User %02d' % x, range(1, len(userids) + 1))
-  summary_df = pd.DataFrame(zip(pcvd_id, accs), columns=['pcvd_id', 'acc'])
+  pcvd_id = ['User %02d' % x for x in range(1, len(userids) + 1)]
+  summary_df = pd.DataFrame(list(zip(pcvd_id, accs)), columns=['pcvd_id', 'acc'])
   ax = sns.barplot(x='acc', y='pcvd_id', color=sns.color_palette('deep')[0], data=summary_df)
   ax.set_xlim(left=min(accs) - 5, right=max(accs) + 5)
   # mean specimen accuracy
@@ -155,11 +155,11 @@ def print_ratio_summary(info):
   overall_summary = df.groupby(['pre_quantizer', 'scorer', 'target_ncolors'])['compression_ratio'].agg(stats)
   summary_header = lambda x: "==================== %s =================" % x
 
-  print summary_header("By user")
-  print by_user_summary
+  print(summary_header("By user"))
+  print(by_user_summary)
 
-  print summary_header("Overall")
-  print overall_summary
+  print(summary_header("Overall"))
+  print(overall_summary)
 
 
 def avg_ratios_and_decreases(info):
@@ -167,8 +167,8 @@ def avg_ratios_and_decreases(info):
     info = pd.read_csv(info)
   df = extend_stats(info)
   df = df[df['pre_quantizer'].isin(['tinypng', 'pngquant'])].groupby(['userid', 'pre_quantizer', 'scorer'])[['fs_decrease', 'compression_ratio']].mean().reset_index()
-  print df.groupby('pre_quantizer')['fs_decrease'].agg(['min', 'max'])
-  print df.groupby('pre_quantizer')['compression_ratio'].agg(['min', 'max'])
+  print(df.groupby('pre_quantizer')['fs_decrease'].agg(['min', 'max']))
+  print(df.groupby('pre_quantizer')['compression_ratio'].agg(['min', 'max']))
 
   
 
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     'cvd_user_accuracy': lambda args: cvd_user_accuracy(db, args.input_path, args.output_path),
     'average_absolute_filesizes': lambda args: average_absolute_filesizes(args.input_path, args.output_path)
   }
-  available_actions_str = ','.join(available_actions.keys())
+  available_actions_str = ','.join(list(available_actions.keys()))
   
   parser = argparse.ArgumentParser(description=description)
   parser.add_argument('database', type=str, help='Path to Specimen database file')
